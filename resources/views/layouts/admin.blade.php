@@ -28,7 +28,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="block px-4 py-2 rounded-md hover:bg-gray-50 text-gray-700 transition">
+                    <a href="{{ route('admin.orders.index') }}" class="block px-4 py-2 rounded-md {{ request()->routeIs('admin.orders.*') ? 'bg-orange-50 text-primary font-medium' : 'hover:bg-gray-50 text-gray-700 transition' }}">
                         Pesanan Masuk
                     </a>
                 </li>

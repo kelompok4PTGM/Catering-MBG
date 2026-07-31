@@ -40,13 +40,33 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     @auth
-                        <span class="text-sm">Halo, {{ Auth::user()->username }} ({{ Auth::user()->role }})</span>
+                        @if(Auth::user()->role === 'User')
+                            <a href="{{ route('cart.index') }}" class="relative hover:bg-amber-600 px-3 py-2 rounded-md text-sm font-medium transition flex items-center gap-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
+                                </svg>
+                                Keranjang
+                                @if(session()->has('cart') && count(session()->get('cart')) > 0)
+                                    <span class="bg-accent text-white text-xs font-black rounded-full h-5 w-5 flex items-center justify-center border border-white">
+                                        {{ count(session()->get('cart')) }}
+                                    </span>
+                                @endif
+                            </a>
+                            <a href="{{ route('user.orders') }}" class="hover:bg-amber-600 px-3 py-2 rounded-md text-sm font-medium transition">Pesanan Saya</a>
+                        @endif
+                        <span class="text-sm font-semibold">Halo, {{ Auth::user()->username }} ({{ Auth::user()->role }})</span>
                         <a href="{{ route('dashboard') }}" class="hover:bg-amber-600 px-3 py-2 rounded-md text-sm font-medium transition">Dashboard</a>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
                             <button type="submit" class="hover:bg-amber-600 px-3 py-2 rounded-md text-sm font-medium transition">Logout</button>
                         </form>
                     @else
+                        <a href="{{ route('cart.index') }}" class="hover:bg-amber-600 px-3 py-2 rounded-md text-sm font-medium transition flex items-center gap-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
+                            </svg>
+                            Keranjang
+                        </a>
                         <a href="{{ route('login') }}" class="hover:bg-amber-600 px-3 py-2 rounded-md text-sm font-medium transition">Login</a>
                         <a href="{{ route('register') }}" class="bg-accent hover:bg-[#5a781d] px-4 py-2 rounded-md text-sm font-bold transition shadow">Daftar</a>
                     @endauth

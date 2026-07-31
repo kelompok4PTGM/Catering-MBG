@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Catering;
 use App\Models\Paket;
+use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +22,7 @@ class PaketController extends Controller
             return redirect()->route('dashboard')->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
         }
 
-        $pakets = Paket::where('id_catering', $catering->id)->get();
+        $pakets = Paket::where('id_catering', $catering->id)->with('menus')->get();
         return view('admin.paket.index', compact('pakets', 'catering'));
     }
 
@@ -32,7 +33,8 @@ class PaketController extends Controller
             return redirect()->route('dashboard')->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
         }
 
-        return view('admin.paket.form', compact('catering'));
+        $menus = Menu::where('id_catering', $catering->id)->get();
+        return view('admin.paket.form', compact('catering', 'menus'));
     }
 
     public function store(Request $request)
@@ -44,14 +46,19 @@ class PaketController extends Controller
 
         $request->validate([
             'nama_paket' => 'required|string|max:100',
-            'harga' => 'required|numeric|gt:0',
+            'menus' => 'required|array|min:1',
+            'menus.*' => 'exists:menu,id'
         ]);
 
-        Paket::create([
+        $total_harga = Menu::whereIn('id', $request->menus)->sum('harga');
+
+        $paket = Paket::create([
             'id_catering' => $catering->id,
             'nama_paket' => $request->nama_paket,
-            'harga' => $request->harga,
+            'harga' => $total_harga,
         ]);
+
+        $paket->menus()->sync($request->menus);
 
         return redirect()->route('paket.index')->with('success', 'Paket berhasil ditambahkan.');
     }
@@ -63,9 +70,10 @@ class PaketController extends Controller
             return redirect()->route('dashboard')->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
         }
 
-        $paket = Paket::where('id', $id)->where('id_catering', $catering->id)->firstOrFail();
+        $paket = Paket::where('id', $id)->where('id_catering', $catering->id)->with('menus')->firstOrFail();
+        $menus = Menu::where('id_catering', $catering->id)->get();
 
-        return view('admin.paket.form', compact('paket', 'catering'));
+        return view('admin.paket.form', compact('paket', 'catering', 'menus'));
     }
 
     public function update(Request $request, $id)
@@ -79,13 +87,18 @@ class PaketController extends Controller
 
         $request->validate([
             'nama_paket' => 'required|string|max:100',
-            'harga' => 'required|numeric|gt:0',
+            'menus' => 'required|array|min:1',
+            'menus.*' => 'exists:menu,id'
         ]);
+
+        $total_harga = Menu::whereIn('id', $request->menus)->sum('harga');
 
         $paket->update([
             'nama_paket' => $request->nama_paket,
-            'harga' => $request->harga,
+            'harga' => $total_harga,
         ]);
+
+        $paket->menus()->sync($request->menus);
 
         return redirect()->route('paket.index')->with('success', 'Paket berhasil diperbarui.');
     }

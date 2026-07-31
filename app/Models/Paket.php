@@ -25,4 +25,9 @@ class Paket extends Model
     {
         return $this->belongsTo(Catering::class, 'id_catering', 'id');
     }
+
+    public function menus()
+    {
+        return $this->belongsToMany(Menu::class, 'menu_paket', 'id_paket', 'id_menu');
+    }
 }

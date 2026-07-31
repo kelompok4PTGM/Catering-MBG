@@ -27,4 +27,9 @@ class Menu extends Model
     {
         return $this->belongsTo(Catering::class, 'id_catering', 'id');
     }
+
+    public function pakets()
+    {
+        return $this->belongsToMany(Paket::class, 'menu_paket', 'id_menu', 'id_paket');
+    }
 }

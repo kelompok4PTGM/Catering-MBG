@@ -13,7 +13,8 @@
         <thead class="bg-secondary">
             <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Paket</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Harga</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Daftar Menu</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Harga Total</th>
                 <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
             </tr>
         </thead>
@@ -21,6 +22,17 @@
             @forelse($pakets as $paket)
             <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $paket->nama_paket }}</td>
+                <td class="px-6 py-4 text-sm text-gray-600">
+                    @if($paket->menus->count() > 0)
+                        <ul class="list-disc pl-4">
+                            @foreach($paket->menus as $menu)
+                                <li>{{ $menu->nama_menu }}</li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <span class="italic text-gray-400">Tidak ada menu</span>
+                    @endif
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Rp {{ number_format($paket->harga, 0, ',', '.') }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <a href="{{ route('paket.edit', $paket->id) }}" class="text-accent hover:text-[#5a781d] mr-3 font-bold">Edit</a>
@@ -33,7 +45,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="3" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada paket.</td>
+                <td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada paket.</td>
             </tr>
             @endforelse
         </tbody>

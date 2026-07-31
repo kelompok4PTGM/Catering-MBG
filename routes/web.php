@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MenuController;
+use App\Http\Controllers\PaketController;
+use App\Http\Controllers\CateringController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -26,6 +29,14 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:Admin')->group(function() {
         Route::get('/admin/dashboard', [HomeController::class, 'adminDashboard'])->name('admin.dashboard');
+        
+        // Catering Profile
+        Route::get('/admin/catering/profile', [CateringController::class, 'profile'])->name('admin.catering.profile');
+        Route::post('/admin/catering/profile', [CateringController::class, 'updateProfile'])->name('admin.catering.update');
+        
+        // Menu & Paket Routes
+        Route::resource('admin/menu', MenuController::class);
+        Route::resource('admin/paket', PaketController::class);
     });
 
     Route::middleware('role:User')->group(function() {

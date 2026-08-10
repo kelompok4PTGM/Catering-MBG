@@ -7,10 +7,9 @@
         <div class="w-full md:w-64 bg-white rounded-lg shadow-sm border border-orange-100 p-4 h-fit">
             <h3 class="text-lg font-bold text-textcolor mb-4 pb-2 border-b">Menu Pelanggan</h3>
             <ul class="space-y-2">
-                <li><a href="#" class="block px-4 py-2 rounded-md bg-orange-50 text-primary font-medium">Dashboard</a></li>
-                <li><a href="#" class="block px-4 py-2 rounded-md hover:bg-gray-50 text-gray-700 transition">Pesanan Saya</a></li>
-                <li><a href="#" class="block px-4 py-2 rounded-md hover:bg-gray-50 text-gray-700 transition">Keranjang (Cart)</a></li>
-                <li><a href="#" class="block px-4 py-2 rounded-md hover:bg-gray-50 text-gray-700 transition">Pengaturan Akun</a></li>
+                <li><a href="{{ route('user.dashboard') }}" class="block px-4 py-2 rounded-md bg-orange-50 text-primary font-medium">Dashboard</a></li>
+                <li><a href="{{ route('user.orders') }}" class="block px-4 py-2 rounded-md hover:bg-gray-50 text-gray-700 transition">Pesanan Saya</a></li>
+                <li><a href="{{ route('cart.index') }}" class="block px-4 py-2 rounded-md hover:bg-gray-50 text-gray-700 transition">Keranjang (Cart)</a></li>
             </ul>
         </div>
         

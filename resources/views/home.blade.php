@@ -37,7 +37,9 @@
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                         {{ $catering->status }}
                     </span>
-                    <a href="#" class="text-primary hover:text-amber-700 font-medium text-sm transition">Lihat Menu &rarr;</a>
+                    <a href="{{ route('catering.show', $catering->id) }}" class="text-primary hover:text-amber-700 font-bold text-sm transition flex items-center gap-1">
+                        Lihat Menu & Paket &rarr;
+                    </a>
                 </div>
             </div>
         </div>

@@ -1,9 +1,8 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -13,98 +12,88 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Table: pengguna (sebagai ganti users, memuat Role)
-        DB::statement("
-            CREATE TABLE pengguna (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                username VARCHAR(50) NOT NULL UNIQUE,
-                email VARCHAR(100) NOT NULL UNIQUE,
-                password VARCHAR(255) NOT NULL,
-                role VARCHAR(20) NOT NULL CHECK(role IN ('Superadmin', 'Admin', 'User')),
-                status VARCHAR(20) DEFAULT 'Aktif',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            )
-        ");
+        Schema::create('pengguna', function (Blueprint $table) {
+            $table->id();
+            $table->string('username', 50)->unique();
+            $table->string('email', 100)->unique();
+            $table->string('password', 255);
+            $table->enum('role', ['Superadmin', 'Admin', 'User']);
+            $table->string('status', 20)->default('Aktif');
+            $table->timestamps();
+        });
 
         // 2. Table: catering (dikontrol oleh Admin/Manager)
-        DB::statement("
-            CREATE TABLE catering (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                id_admin INT NOT NULL,
-                nama_catering VARCHAR(100) NOT NULL UNIQUE,
-                deskripsi TEXT,
-                status VARCHAR(20) DEFAULT 'Aktif',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                FOREIGN KEY (id_admin) REFERENCES pengguna(id) ON DELETE CASCADE
-            )
-        ");
+        Schema::create('catering', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('id_admin');
+            $table->string('nama_catering', 100)->unique();
+            $table->text('deskripsi')->nullable();
+            $table->string('status', 20)->default('Aktif');
+            $table->timestamps();
+
+            $table->foreign('id_admin')->references('id')->on('pengguna')->onDelete('cascade');
+        });
 
         // 3. Table: menu
-        DB::statement("
-            CREATE TABLE menu (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                id_catering INT NOT NULL,
-                kode_menu VARCHAR(20) NOT NULL UNIQUE,
-                nama_menu VARCHAR(100) NOT NULL,
-                harga DECIMAL(10,2) NOT NULL CHECK(harga > 0),
-                stok INT NOT NULL CHECK(stok >= 0),
-                FOREIGN KEY (id_catering) REFERENCES catering(id) ON DELETE CASCADE
-            )
-        ");
+        Schema::create('menu', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('id_catering');
+            $table->string('kode_menu', 20)->unique();
+            $table->string('nama_menu', 100);
+            $table->decimal('harga', 10, 2);
+            $table->integer('stok');
+
+            $table->foreign('id_catering')->references('id')->on('catering')->onDelete('cascade');
+        });
 
         // 4. Table: paket
-        DB::statement("
-            CREATE TABLE paket (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                id_catering INT NOT NULL,
-                nama_paket VARCHAR(100) NOT NULL,
-                harga DECIMAL(10,2) NOT NULL CHECK(harga > 0),
-                FOREIGN KEY (id_catering) REFERENCES catering(id) ON DELETE CASCADE
-            )
-        ");
+        Schema::create('paket', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('id_catering');
+            $table->string('nama_paket', 100);
+            $table->decimal('harga', 10, 2);
+
+            $table->foreign('id_catering')->references('id')->on('catering')->onDelete('cascade');
+        });
 
         // 5. Table: pesanan
-        DB::statement("
-            CREATE TABLE pesanan (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                id_pelanggan INT NOT NULL,
-                id_catering INT NOT NULL,
-                tanggal_pesanan TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                status_pesanan VARCHAR(50) DEFAULT 'Pending' CHECK(status_pesanan IN ('Pending', 'Diproses', 'Selesai', 'Batal')),
-                total_harga DECIMAL(15,2) NOT NULL CHECK(total_harga >= 0),
-                FOREIGN KEY (id_pelanggan) REFERENCES pengguna(id) ON DELETE CASCADE,
-                FOREIGN KEY (id_catering) REFERENCES catering(id) ON DELETE CASCADE
-            )
-        ");
+        Schema::create('pesanan', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('id_pelanggan');
+            $table->unsignedBigInteger('id_catering');
+            $table->timestamp('tanggal_pesanan')->useCurrent();
+            $table->enum('status_pesanan', ['Pending', 'Diproses', 'Selesai', 'Batal'])->default('Pending');
+            $table->decimal('total_harga', 15, 2);
+
+            $table->foreign('id_pelanggan')->references('id')->on('pengguna')->onDelete('cascade');
+            $table->foreign('id_catering')->references('id')->on('catering')->onDelete('cascade');
+        });
 
         // 6. Table: detail_pesanan
-        DB::statement("
-            CREATE TABLE detail_pesanan (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                id_pesanan INT NOT NULL,
-                id_menu INT NULL,
-                id_paket INT NULL,
-                jumlah INT NOT NULL CHECK(jumlah > 0),
-                subtotal DECIMAL(15,2) NOT NULL CHECK(subtotal >= 0),
-                FOREIGN KEY (id_pesanan) REFERENCES pesanan(id) ON DELETE CASCADE,
-                FOREIGN KEY (id_menu) REFERENCES menu(id) ON DELETE SET NULL,
-                FOREIGN KEY (id_paket) REFERENCES paket(id) ON DELETE SET NULL
-            )
-        ");
+        Schema::create('detail_pesanan', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('id_pesanan');
+            $table->unsignedBigInteger('id_menu')->nullable();
+            $table->unsignedBigInteger('id_paket')->nullable();
+            $table->integer('jumlah');
+            $table->decimal('subtotal', 15, 2);
+
+            $table->foreign('id_pesanan')->references('id')->on('pesanan')->onDelete('cascade');
+            $table->foreign('id_menu')->references('id')->on('menu')->onDelete('set null');
+            $table->foreign('id_paket')->references('id')->on('paket')->onDelete('set null');
+        });
 
         // 7. Table: pembayaran
-        DB::statement("
-            CREATE TABLE pembayaran (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                id_pesanan INT NOT NULL,
-                tanggal_bayar TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                metode_pembayaran VARCHAR(50) NOT NULL,
-                jumlah_bayar DECIMAL(15,2) NOT NULL CHECK(jumlah_bayar > 0),
-                status_pembayaran VARCHAR(50) DEFAULT 'Berhasil',
-                FOREIGN KEY (id_pesanan) REFERENCES pesanan(id) ON DELETE CASCADE
-            )
-        ");
+        Schema::create('pembayaran', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('id_pesanan');
+            $table->timestamp('tanggal_bayar')->useCurrent();
+            $table->string('metode_pembayaran', 50);
+            $table->decimal('jumlah_bayar', 15, 2);
+            $table->string('status_pembayaran', 50)->default('Berhasil');
+
+            $table->foreign('id_pesanan')->references('id')->on('pesanan')->onDelete('cascade');
+        });
 
         // Laravel standard tables required for auth/session
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -130,13 +119,12 @@ return new class extends Migration
     {
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
-        
-        DB::statement("DROP TABLE IF EXISTS pembayaran");
-        DB::statement("DROP TABLE IF EXISTS detail_pesanan");
-        DB::statement("DROP TABLE IF EXISTS pesanan");
-        DB::statement("DROP TABLE IF EXISTS paket");
-        DB::statement("DROP TABLE IF EXISTS menu");
-        DB::statement("DROP TABLE IF EXISTS catering");
-        DB::statement("DROP TABLE IF EXISTS pengguna");
+        Schema::dropIfExists('pembayaran');
+        Schema::dropIfExists('detail_pesanan');
+        Schema::dropIfExists('pesanan');
+        Schema::dropIfExists('paket');
+        Schema::dropIfExists('menu');
+        Schema::dropIfExists('catering');
+        Schema::dropIfExists('pengguna');
     }
 };

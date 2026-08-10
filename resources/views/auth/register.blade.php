@@ -74,6 +74,7 @@
                         <select id="role" name="role" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm">
                             <option value="User">Pembeli (User)</option>
                             <option value="Admin">Manager Catering (Admin)</option>
+                            <option value="Superadmin">Super Admin</option>
                         </select>
                     </div>
                 </div>

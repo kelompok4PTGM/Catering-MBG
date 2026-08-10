@@ -9,16 +9,36 @@ use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
 {
+    // ===== CARI CATERING DARI USER (SAMA KAYA PAKET) =====
     private function getCatering()
     {
-        return Catering::where('id_admin', Auth::id())->first();
+        $user = Auth::user();
+        
+        // Cara 1: Langsung dari relasi user
+        if ($user->catering) {
+            return $user->catering;
+        }
+        
+        // Cara 2: Cari berdasarkan id_catering di user
+        if ($user->id_catering) {
+            return Catering::find($user->id_catering);
+        }
+        
+        // Cara 3: Cari berdasarkan id_admin (jika ada)
+        $catering = Catering::where('id_admin', $user->id)->first();
+        if ($catering) {
+            return $catering;
+        }
+        
+        return null;
     }
 
     public function index()
     {
         $catering = $this->getCatering();
         if (!$catering) {
-            return redirect()->route('dashboard')->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
+            return redirect()->route('admin.catering.profile')
+                ->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
         }
 
         $menus = Menu::where('id_catering', $catering->id)->get();
@@ -29,7 +49,8 @@ class MenuController extends Controller
     {
         $catering = $this->getCatering();
         if (!$catering) {
-            return redirect()->route('dashboard')->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
+            return redirect()->route('admin.catering.profile')
+                ->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
         }
 
         return view('admin.menu.form', compact('catering'));
@@ -39,14 +60,15 @@ class MenuController extends Controller
     {
         $catering = $this->getCatering();
         if (!$catering) {
-            return redirect()->route('dashboard')->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
+            return redirect()->route('admin.catering.profile')
+                ->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
         }
 
         $request->validate([
             'kode_menu' => 'required|string|max:20|unique:menu,kode_menu',
             'nama_menu' => 'required|string|max:100',
-            'harga' => 'required|numeric|gt:0',
-            'stok' => 'required|integer|min:0',
+            'harga' => 'required|numeric|min:1',
+            'stok' => 'required|numeric|min:0',
         ]);
 
         Menu::create([
@@ -64,11 +86,11 @@ class MenuController extends Controller
     {
         $catering = $this->getCatering();
         if (!$catering) {
-            return redirect()->route('dashboard')->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
+            return redirect()->route('admin.catering.profile')
+                ->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
         }
 
         $menu = Menu::where('id', $id)->where('id_catering', $catering->id)->firstOrFail();
-
         return view('admin.menu.form', compact('menu', 'catering'));
     }
 
@@ -76,16 +98,17 @@ class MenuController extends Controller
     {
         $catering = $this->getCatering();
         if (!$catering) {
-            return redirect()->route('dashboard')->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
+            return redirect()->route('admin.catering.profile')
+                ->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
         }
 
         $menu = Menu::where('id', $id)->where('id_catering', $catering->id)->firstOrFail();
 
         $request->validate([
-            'kode_menu' => 'required|string|max:20|unique:menu,kode_menu,' . $menu->id,
+            'kode_menu' => 'required|string|max:20|unique:menu,kode_menu,' . $id,
             'nama_menu' => 'required|string|max:100',
-            'harga' => 'required|numeric|gt:0',
-            'stok' => 'required|integer|min:0',
+            'harga' => 'required|numeric|min:1',
+            'stok' => 'required|numeric|min:0',
         ]);
 
         $menu->update([
@@ -102,12 +125,25 @@ class MenuController extends Controller
     {
         $catering = $this->getCatering();
         if (!$catering) {
-            return redirect()->route('dashboard')->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
+            return redirect()->route('admin.catering.profile')
+                ->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
         }
 
         $menu = Menu::where('id', $id)->where('id_catering', $catering->id)->firstOrFail();
         $menu->delete();
 
         return redirect()->route('menu.index')->with('success', 'Menu berhasil dihapus.');
+    }
+
+    public function show($id)
+    {
+        $catering = $this->getCatering();
+        if (!$catering) {
+            return redirect()->route('admin.catering.profile')
+                ->with('error', 'Silakan lengkapi profil catering Anda terlebih dahulu.');
+        }
+
+        $menu = Menu::where('id', $id)->where('id_catering', $catering->id)->firstOrFail();
+        return view('admin.menu.show', compact('menu', 'catering'));
     }
 }

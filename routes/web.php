@@ -6,6 +6,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PaketController;
 use App\Http\Controllers\CateringController;
+use App\Http\Controllers\AnalisisController; // TAMBAHKAN
+use App\Http\Controllers\SuperadminController; // TAMBAHKAN
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -22,11 +24,17 @@ Route::middleware('auth')->group(function () {
     // Default dashboard will redirect based on role
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
     
-    // Role specific dashboards
+    // ============ SUPERADMIN ============
     Route::middleware('role:Superadmin')->group(function() {
         Route::get('/superadmin/dashboard', [HomeController::class, 'superadminDashboard'])->name('superadmin.dashboard');
+        
+        // ===== FITUR SUPERADMIN (BARU) =====
+        Route::get('/superadmin/pengguna', [SuperadminController::class, 'pengguna'])->name('superadmin.pengguna');
+        Route::get('/superadmin/catering', [SuperadminController::class, 'catering'])->name('superadmin.catering');
+        Route::get('/superadmin/pesanan', [SuperadminController::class, 'pesanan'])->name('superadmin.pesanan');
     });
 
+    // ============ ADMIN ============
     Route::middleware('role:Admin')->group(function() {
         Route::get('/admin/dashboard', [HomeController::class, 'adminDashboard'])->name('admin.dashboard');
         
@@ -38,12 +46,18 @@ Route::middleware('auth')->group(function () {
         Route::resource('admin/menu', MenuController::class);
         Route::resource('admin/paket', PaketController::class);
 
-        // Admin Catering Incoming Orders (Strictly isolated by id_catering)
+        // Admin Orders
         Route::get('/admin/orders', [\App\Http\Controllers\AdminOrderController::class, 'index'])->name('admin.orders.index');
         Route::get('/admin/orders/{id}', [\App\Http\Controllers\AdminOrderController::class, 'show'])->name('admin.orders.show');
         Route::post('/admin/orders/{id}/status', [\App\Http\Controllers\AdminOrderController::class, 'updateStatus'])->name('admin.orders.status');
+        
+        // ===== LAPORAN PENJUALAN (BARU) =====
+        Route::get('/admin/laporan', [AnalisisController::class, 'laporanAdmin'])->name('admin.laporan');
+        Route::get('/admin/laporan/print', [AnalisisController::class, 'printLaporan'])->name('admin.laporan.print');
+        Route::get('/admin/laporan/csv', [AnalisisController::class, 'exportCsv'])->name('admin.laporan.csv');
     });
 
+    // ============ USER ============
     Route::middleware('role:User')->group(function() {
         Route::get('/user/dashboard', [HomeController::class, 'userDashboard'])->name('user.dashboard');
         
@@ -55,7 +69,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/user/orders/{id}/pay', [\App\Http\Controllers\OrderController::class, 'pay'])->name('user.orders.pay');
     });
 
-    // Public / Shared Cart Routes (accessible when logged in or viewing)
+    // ============ PUBLIC / SHARED ============
     Route::get('/catering/{id}', [\App\Http\Controllers\CateringStoreController::class, 'show'])->name('catering.show');
     Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
     Route::post('/cart/add', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');

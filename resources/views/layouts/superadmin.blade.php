@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catering MBG - Admin</title>
+    <title>Catering MBG - Superadmin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -30,7 +30,6 @@
             color: #1e293b;
         }
         
-        /* ===== SIDEBAR ===== */
         .sidebar {
             width: 260px;
             height: 100vh;
@@ -43,15 +42,11 @@
             z-index: 50;
             transition: width 0.3s ease;
         }
-        /* Sidebar collapsed */
-        .sidebar.collapsed {
-            width: 72px;
-        }
+        .sidebar.collapsed { width: 72px; }
         .sidebar.collapsed .sidebar-brand h2 { display: none; }
         .sidebar.collapsed .sidebar-brand span { display: none; }
         .sidebar.collapsed .menu-label { display: none; }
         .sidebar.collapsed .sidebar-menu a span { display: none; }
-        .sidebar.collapsed .sidebar-menu a .badge { display: none; }
         .sidebar.collapsed .sidebar-menu a { justify-content: center; padding: 10px; }
         .sidebar.collapsed .sidebar-menu a i { font-size: 20px; margin: 0; }
         .sidebar.collapsed .sidebar-brand { justify-content: center; padding: 16px; }
@@ -81,13 +76,7 @@
             font-weight: 700;
             flex-shrink: 0;
         }
-        .sidebar-brand h2 {
-            color: #f8fafc;
-            font-size: 18px;
-            font-weight: 700;
-            white-space: nowrap;
-            transition: opacity 0.2s ease;
-        }
+        .sidebar-brand h2 { color: #f8fafc; font-size: 18px; font-weight: 700; white-space: nowrap; }
         .sidebar-brand h2 span { color: #F59E0B; }
         
         .sidebar-menu { padding: 12px 12px; }
@@ -99,7 +88,6 @@
             padding: 8px 12px 4px;
             font-weight: 600;
             white-space: nowrap;
-            transition: opacity 0.2s ease;
         }
         .sidebar-menu a {
             display: flex;
@@ -117,32 +105,15 @@
         }
         .sidebar-menu a:hover { background: #1e293b; color: #f8fafc; }
         .sidebar-menu a.active { background: #F59E0B; color: #0f172a; }
-        .sidebar-menu a i {
-            width: 20px;
-            font-size: 16px;
-            flex-shrink: 0;
-            text-align: center;
-        }
-        .sidebar-menu a .badge {
-            margin-left: auto;
-            background: #ef4444;
-            color: white;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 12px;
-        }
+        .sidebar-menu a i { width: 20px; font-size: 16px; flex-shrink: 0; text-align: center; }
         
-        /* ===== MAIN CONTENT ===== */
         .main-content {
             margin-left: 260px;
             min-height: 100vh;
             transition: margin-left 0.3s ease;
         }
-        .sidebar.collapsed ~ .main-content {
-            margin-left: 72px;
-        }
+        .sidebar.collapsed ~ .main-content { margin-left: 72px; }
         
-        /* ===== TOPBAR ===== */
         .topbar {
             background: white;
             padding: 12px 24px;
@@ -154,52 +125,22 @@
             top: 0;
             z-index: 40;
         }
-        .topbar .left-section {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-        .topbar .left-section h1 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #0f172a;
-        }
-        .topbar .user-info {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+        .topbar .left-section { display: flex; align-items: center; gap: 16px; }
+        .topbar .left-section h1 { font-size: 18px; font-weight: 600; color: #0f172a; }
+        .topbar .user-info { display: flex; align-items: center; gap: 16px; }
         .topbar .user-info .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #F59E0B;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
+            width: 36px; height: 36px; border-radius: 50%; background: #F59E0B;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 600; font-size: 14px;
         }
-        .topbar .user-info span { font-size: 14px; color: #1e293b; }
-        
-        /* ===== TOGGLE BUTTON ===== */
         .sidebar-toggle {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #0f172a;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
+            background: none; border: none; font-size: 20px; color: #0f172a;
+            cursor: pointer; padding: 8px; border-radius: 8px; transition: background 0.2s;
         }
         .sidebar-toggle:hover { background: #f1f5f9; }
-        
-        /* ===== PAGE CONTENT ===== */
         .page-content { padding: 24px 32px; }
+        .sidebar-toggle-mobile { display: none; }
         
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -211,21 +152,17 @@
             .sidebar.collapsed.open .sidebar-brand h2 { display: block; }
             .sidebar.collapsed.open .menu-label { display: block; }
             .sidebar.collapsed.open .sidebar-menu a span { display: inline; }
-            .sidebar.collapsed.open .sidebar-menu a .badge { display: inline; }
             .sidebar.collapsed.open .sidebar-menu a { justify-content: flex-start; padding: 10px 14px; }
             
             .main-content { margin-left: 0 !important; }
-            .sidebar ~ .main-content { margin-left: 0 !important; }
             .topbar { padding: 12px 16px; }
             .page-content { padding: 16px; }
             .sidebar-toggle-mobile { display: block !important; }
         }
-        .sidebar-toggle-mobile { display: none; }
     </style>
 </head>
 <body>
 
-<!-- ============ SIDEBAR ============ -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
         <div class="brand-icon">MBG</div>
@@ -233,32 +170,19 @@
     </div>
     <nav class="sidebar-menu">
         <div class="menu-label">Main Menu</div>
-        <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+        <a href="{{ route('superadmin.dashboard') }}" class="{{ request()->routeIs('superadmin.dashboard') ? 'active' : '' }}">
             <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
         </a>
-        <a href="{{ route('admin.catering.profile') }}" class="{{ request()->routeIs('admin.catering.*') ? 'active' : '' }}">
-            <i class="fas fa-store"></i> <span>Profil Catering</span>
-        </a>
-        
         <div class="menu-label">Manajemen</div>
-        <a href="{{ route('menu.index') }}" class="{{ request()->routeIs('menu.*') ? 'active' : '' }}">
-            <i class="fas fa-utensils"></i> <span>Kelola Menu</span>
+        <a href="{{ route('superadmin.pengguna') }}" class="{{ request()->routeIs('superadmin.pengguna') ? 'active' : '' }}">
+            <i class="fas fa-users"></i> <span>Kelola Pengguna</span>
         </a>
-        <a href="{{ route('paket.index') }}" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}">
-            <i class="fas fa-box"></i> <span>Kelola Paket</span>
+        <a href="{{ route('superadmin.catering') }}" class="{{ request()->routeIs('superadmin.catering') ? 'active' : '' }}">
+            <i class="fas fa-store"></i> <span>Semua Catering</span>
         </a>
-        
-        <div class="menu-label">Transaksi</div>
-        <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-            <i class="fas fa-clipboard-list"></i> <span>Pesanan Masuk</span>
-            <span class="badge">{{ \App\Models\Pesanan::where('id_catering', auth()->user()->id_catering ?? 0)->where('status_pesanan', 'Pending')->count() }}</span>
+        <a href="{{ route('superadmin.pesanan') }}" class="{{ request()->routeIs('superadmin.pesanan') ? 'active' : '' }}">
+            <i class="fas fa-clipboard-list"></i> <span>Semua Pesanan</span>
         </a>
-        
-        <div class="menu-label">Laporan</div>
-        <a href="{{ route('admin.laporan') }}" class="{{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
-            <i class="fas fa-file-alt"></i> <span>Laporan Penjualan</span>
-        </a>
-        
         <div class="menu-label">Akun</div>
         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
             <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
@@ -267,69 +191,51 @@
     </nav>
 </aside>
 
-<!-- ============ MAIN CONTENT ============ -->
 <div class="main-content" id="mainContent">
-    <!-- Topbar -->
     <header class="topbar">
         <div class="left-section">
-            <!-- TOMBOL 3 GARIS (COLLAPSE) -->
             <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
                 <i class="fas fa-bars"></i>
             </button>
-            <!-- TOMBOL 3 GARIS UNTUK MOBILE -->
             <button class="sidebar-toggle sidebar-toggle-mobile" id="sidebarToggleMobile" title="Open Sidebar">
                 <i class="fas fa-bars"></i>
             </button>
-            <h1>{{ $pageTitle ?? 'Dashboard' }}</h1>
+            <h1>{{ $pageTitle ?? 'Dashboard Superadmin' }}</h1>
         </div>
         <div class="user-info">
-            <span>{{ Auth::user()->username ?? 'Admin' }}</span>
-            <div class="avatar">{{ substr(Auth::user()->username ?? 'A', 0, 1) }}</div>
+            <span>{{ Auth::user()->username ?? 'Superadmin' }}</span>
+            <div class="avatar">{{ substr(Auth::user()->username ?? 'S', 0, 1) }}</div>
         </div>
     </header>
-
-    <!-- Page Content -->
     <div class="page-content">
         @if(session('success'))
-            <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded mb-4 text-sm text-green-700">
-                {{ session('success') }}
-            </div>
+            <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded mb-4 text-sm text-green-700">{{ session('success') }}</div>
         @endif
         @if(session('error'))
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-4 text-sm text-red-700">
-                {{ session('error') }}
-            </div>
+            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-4 text-sm text-red-700">{{ session('error') }}</div>
         @endif
-        @yield('admin_content')
+        @yield('content')
     </div>
 </div>
 
 <script>
-    // ===== SIDEBAR COLLAPSE =====
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('sidebarToggle');
     const toggleMobile = document.getElementById('sidebarToggleMobile');
-    const mainContent = document.getElementById('mainContent');
 
-    // Toggle collapse (desktop)
     toggleBtn.addEventListener('click', function() {
         sidebar.classList.toggle('collapsed');
-        // Simpan state di localStorage
-        const isCollapsed = sidebar.classList.contains('collapsed');
-        localStorage.setItem('sidebarCollapsed', isCollapsed);
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
     });
 
-    // Toggle mobile
     toggleMobile.addEventListener('click', function() {
         sidebar.classList.toggle('open');
     });
 
-    // Load saved state
     if (localStorage.getItem('sidebarCollapsed') === 'true') {
         sidebar.classList.add('collapsed');
     }
 
-    // Close sidebar on outside click (mobile)
     document.addEventListener('click', function(e) {
         if (window.innerWidth <= 768 && sidebar.classList.contains('open') && 
             !sidebar.contains(e.target) && !toggleMobile.contains(e.target)) {

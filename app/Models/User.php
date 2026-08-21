@@ -16,39 +16,37 @@ class User extends Authenticatable
 
     protected $table = 'pengguna';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'username',
         'email',
         'password',
         'role',
         'status',
+        'id_catering', // ← PASTIKAN ADA
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // RELASI KE CATERING
+    public function catering()
+    {
+        return $this->belongsTo(Catering::class, 'id_catering', 'id');
+    }
+
+    // RELASI KE PESANAN (sebagai pelanggan)
+    public function pesanan()
+    {
+        return $this->hasMany(Pesanan::class, 'id_pelanggan', 'id');
     }
 }

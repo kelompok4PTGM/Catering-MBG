@@ -13,7 +13,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $caterings = DB::table('catering')->where('status', 'Aktif')->get();
+        $caterings = Catering::where('status', 'Aktif')->with(['menus', 'pakets', 'ulasans'])->get();
         return view('home', compact('caterings'));
     }
 
@@ -215,11 +215,14 @@ class HomeController extends Controller
             ->limit(5)
             ->get();
 
+        $caterings = Catering::where('status', 'Aktif')->with(['menus', 'pakets', 'ulasans'])->get();
+
         return view('user.dashboard', [
             'totalPesanan' => $totalPesanan,
             'totalSelesai' => $totalSelesai,
             'totalBelanja' => $totalBelanja,
-            'pesanan' => $pesanan
+            'pesanan' => $pesanan,
+            'caterings' => $caterings
         ]);
     }
 }

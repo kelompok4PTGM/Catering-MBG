@@ -55,14 +55,23 @@
             <div class="bg-white rounded-xl shadow-sm border border-orange-100 overflow-hidden divide-y divide-gray-100">
                 @foreach($cart as $key => $item)
                 <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="px-2 py-0.5 text-[10px] font-extrabold tracking-wider uppercase rounded {{ $item['type'] === 'paket' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
-                                {{ $item['type'] }}
-                            </span>
+                    <div class="flex items-center gap-4 flex-1">
+                        @if(!empty($item['foto']))
+                            <img src="{{ asset('storage/' . $item['foto']) }}" alt="{{ $item['nama'] }}" class="w-16 h-16 rounded-lg object-cover border border-gray-100 flex-shrink-0">
+                        @else
+                            <div class="w-16 h-16 rounded-lg bg-orange-50 flex items-center justify-center text-orange-400 text-lg flex-shrink-0 border border-orange-100">
+                                <i class="fas {{ $item['type'] === 'paket' ? 'fa-box' : 'fa-utensils' }}"></i>
+                            </div>
+                        @endif
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="px-2 py-0.5 text-[10px] font-extrabold tracking-wider uppercase rounded {{ $item['type'] === 'paket' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800' }}">
+                                    {{ $item['type'] }}
+                                </span>
+                            </div>
+                            <h4 class="text-base font-bold text-textcolor">{{ $item['nama'] }}</h4>
+                            <p class="text-sm font-semibold text-primary">Rp {{ number_format($item['harga'], 0, ',', '.') }} / porsi</p>
                         </div>
-                        <h4 class="text-base font-bold text-textcolor">{{ $item['nama'] }}</h4>
-                        <p class="text-sm font-semibold text-primary">Rp {{ number_format($item['harga'], 0, ',', '.') }} / porsi</p>
                     </div>
 
                     <!-- Quantity Form & Subtotal -->

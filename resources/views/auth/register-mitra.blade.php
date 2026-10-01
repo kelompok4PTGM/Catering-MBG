@@ -4,16 +4,16 @@
 <div class="min-h-[80vh] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-white">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 class="text-center text-3xl font-bold text-gray-900">
-            Daftar Akun Baru
+            Daftar Sebagai Mitra Catering
         </h2>
         <p class="mt-2 text-center text-sm text-gray-500">
-            Bergabung untuk memesan catering terbaik
+            Kembangkan bisnis catering Anda bersama kami
         </p>
     </div>
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div class="bg-white py-8 px-6 shadow-sm rounded-xl border border-gray-100 sm:px-10">
-            <form class="space-y-5" action="{{ route('register') }}" method="POST">
+            <form class="space-y-5" action="{{ route('register.mitra') }}" method="POST">
                 @csrf
 
                 @if ($errors->any())
@@ -66,7 +66,7 @@
                 <div class="pt-2">
                     <button type="submit"
                             class="btn-primary w-full flex justify-center py-3 px-4 rounded-lg text-sm font-semibold">
-                        Daftar Sebagai Pembeli
+                        Daftar Menjadi Mitra
                     </button>
                 </div>
             </form>
@@ -77,8 +77,8 @@
                     <a href="{{ route('login') }}" class="font-semibold text-orange-500 hover:text-orange-600 transition">Masuk di sini</a>
                 </p>
                 <p class="text-sm text-gray-600">
-                    Anda ingin menjadi mitra catering?
-                    <a href="{{ route('register.mitra') }}" class="font-semibold text-orange-500 hover:text-orange-600 transition">Daftar disini</a>
+                    Ingin mendaftar sebagai pembeli?
+                    <a href="{{ route('register') }}" class="font-semibold text-orange-500 hover:text-orange-600 transition">Daftar disini</a>
                 </p>
             </div>
         </div>

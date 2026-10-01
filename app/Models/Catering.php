@@ -18,6 +18,7 @@ class Catering extends Model
         'nama_catering',
         'deskripsi',
         'status',
+        'foto',
     ];
 
     public function admin(): BelongsTo
@@ -33,5 +34,26 @@ class Catering extends Model
     public function pakets(): HasMany
     {
         return $this->hasMany(Paket::class, 'id_catering', 'id');
+    }
+
+    public function ulasans(): HasMany
+    {
+        return $this->hasMany(Ulasan::class, 'id_catering', 'id')->latest();
+    }
+
+    public function getAverageRatingAttribute(): float
+    {
+        $avg = $this->relationLoaded('ulasans')
+            ? $this->ulasans->avg('rating')
+            : $this->ulasans()->avg('rating');
+
+        return $avg ? (float) number_format($avg, 1, '.', '') : 0.0;
+    }
+
+    public function getTotalUlasanAttribute(): int
+    {
+        return $this->relationLoaded('ulasans')
+            ? $this->ulasans->count()
+            : $this->ulasans()->count();
     }
 }

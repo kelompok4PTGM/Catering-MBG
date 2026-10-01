@@ -64,10 +64,23 @@
                             <span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800">Belum Bayar</span>
                         @endif
                     </td>
-                    <td class="p-4">
-                        <a href="{{ route('user.orders.show', $order->id) }}" class="text-primary hover:underline text-xs font-medium">
-                            Detail
-                        </a>
+                    <td class="p-4 whitespace-nowrap">
+                        <div class="flex items-center gap-2">
+                            <a href="{{ route('user.orders.show', $order->id) }}" class="text-primary hover:underline text-xs font-semibold">
+                                Detail
+                            </a>
+                            @if($order->status_pesanan == 'Selesai')
+                                @if($order->ulasan)
+                                    <span class="inline-flex items-center gap-1 text-[11px] text-amber-600 bg-amber-50 px-2 py-0.5 rounded font-medium">
+                                        <i class="fas fa-star text-amber-400"></i> {{ $order->ulasan->rating }}/5
+                                    </span>
+                                @else
+                                    <a href="{{ route('user.orders.show', $order->id) }}" class="inline-flex items-center gap-1 text-[11px] text-white bg-amber-500 hover:bg-amber-600 px-2 py-0.5 rounded font-bold transition shadow-xs">
+                                        <i class="fas fa-star text-xs"></i> Beri Ulasan
+                                    </a>
+                                @endif
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty

@@ -6,6 +6,7 @@ use App\Models\Catering;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
@@ -69,7 +70,13 @@ class MenuController extends Controller
             'nama_menu' => 'required|string|max:100',
             'harga' => 'required|numeric|min:1',
             'stok' => 'required|numeric|min:0',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
+
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('menu', 'public');
+        }
 
         Menu::create([
             'id_catering' => $catering->id,
@@ -77,6 +84,7 @@ class MenuController extends Controller
             'nama_menu' => $request->nama_menu,
             'harga' => $request->harga,
             'stok' => $request->stok,
+            'foto' => $fotoPath,
         ]);
 
         return redirect()->route('menu.index')->with('success', 'Menu berhasil ditambahkan.');
@@ -109,14 +117,24 @@ class MenuController extends Controller
             'nama_menu' => 'required|string|max:100',
             'harga' => 'required|numeric|min:1',
             'stok' => 'required|numeric|min:0',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        $menu->update([
+        $data = [
             'kode_menu' => $request->kode_menu,
             'nama_menu' => $request->nama_menu,
             'harga' => $request->harga,
             'stok' => $request->stok,
-        ]);
+        ];
+
+        if ($request->hasFile('foto')) {
+            if ($menu->foto && Storage::disk('public')->exists($menu->foto)) {
+                Storage::disk('public')->delete($menu->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('menu', 'public');
+        }
+
+        $menu->update($data);
 
         return redirect()->route('menu.index')->with('success', 'Menu berhasil diperbarui.');
     }
@@ -130,6 +148,11 @@ class MenuController extends Controller
         }
 
         $menu = Menu::where('id', $id)->where('id_catering', $catering->id)->firstOrFail();
+
+        if ($menu->foto && Storage::disk('public')->exists($menu->foto)) {
+            Storage::disk('public')->delete($menu->foto);
+        }
+
         $menu->delete();
 
         return redirect()->route('menu.index')->with('success', 'Menu berhasil dihapus.');

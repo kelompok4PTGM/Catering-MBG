@@ -12,6 +12,18 @@
     </div>
 </div>
 
+@if(Auth::user()->status === 'Pending')
+<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded shadow-sm">
+    <div class="flex items-center">
+        <i class="fas fa-info-circle text-yellow-500 text-xl mr-3"></i>
+        <div>
+            <h3 class="font-bold text-yellow-800">Akun Menunggu Persetujuan</h3>
+            <p class="text-sm text-yellow-700">Akun Anda sedang menunggu persetujuan dari Superadmin. Anda belum bisa mengakses fitur manajemen catering sampai akun disetujui.</p>
+        </div>
+    </div>
+</div>
+@endif
+
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition">

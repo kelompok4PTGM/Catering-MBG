@@ -43,41 +43,69 @@
             transition: width 0.3s ease;
         }
         .sidebar.collapsed { width: 72px; }
+        .sidebar.collapsed .sidebar-brand { justify-content: center; padding: 14px 8px; }
         .sidebar.collapsed .sidebar-brand h2 { display: none; }
         .sidebar.collapsed .sidebar-brand span { display: none; }
+        .sidebar.collapsed .sidebar-brand .sidebar-toggle-btn { display: none; }
+        .sidebar.collapsed .sidebar-brand .brand-icon { margin: 0; cursor: pointer; }
         .sidebar.collapsed .menu-label { display: none; }
         .sidebar.collapsed .sidebar-menu a span { display: none; }
         .sidebar.collapsed .sidebar-menu a { justify-content: center; padding: 10px; }
         .sidebar.collapsed .sidebar-menu a i { font-size: 20px; margin: 0; }
-        .sidebar.collapsed .sidebar-brand { justify-content: center; padding: 16px; }
-        .sidebar.collapsed .sidebar-brand .brand-icon { margin: 0; }
         
         .sidebar::-webkit-scrollbar { width: 4px; }
         .sidebar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
         
         .sidebar-brand {
-            padding: 16px 20px;
+            padding: 14px 16px;
             border-bottom: 1px solid #1e293b;
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
             transition: all 0.3s ease;
         }
+        .sidebar-brand .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .sidebar-brand .brand-icon {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             background: #F59E0B;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             color: #0f172a;
             font-weight: 700;
             flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.2s ease;
         }
-        .sidebar-brand h2 { color: #f8fafc; font-size: 18px; font-weight: 700; white-space: nowrap; }
+        .sidebar.collapsed .sidebar-brand .brand-icon:hover {
+            transform: scale(1.08);
+        }
+        .sidebar-brand h2 { color: #f8fafc; font-size: 17px; font-weight: 700; white-space: nowrap; }
         .sidebar-brand h2 span { color: #F59E0B; }
+        .sidebar-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-toggle-btn:hover {
+            background: #1e293b;
+            color: #f8fafc;
+        }
         
         .sidebar-menu { padding: 12px 12px; }
         .sidebar-menu .menu-label {
@@ -165,8 +193,13 @@
 
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <div class="brand-icon">MBG</div>
-        <h2>Catering <span>MBG</span></h2>
+        <div class="brand-info">
+            <div class="brand-icon" id="brandIcon" title="Toggle Sidebar">MBG</div>
+            <h2>Catering <span>MBG</span></h2>
+        </div>
+        <button class="sidebar-toggle-btn" id="sidebarToggle" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
     </div>
     <nav class="sidebar-menu">
         <div class="menu-label">Main Menu</div>
@@ -194,9 +227,6 @@
 <div class="main-content" id="mainContent">
     <header class="topbar">
         <div class="left-section">
-            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
-                <i class="fas fa-bars"></i>
-            </button>
             <button class="sidebar-toggle sidebar-toggle-mobile" id="sidebarToggleMobile" title="Open Sidebar">
                 <i class="fas fa-bars"></i>
             </button>
@@ -221,16 +251,28 @@
 <script>
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('sidebarToggle');
+    const brandIcon = document.getElementById('brandIcon');
     const toggleMobile = document.getElementById('sidebarToggleMobile');
 
-    toggleBtn.addEventListener('click', function() {
+    function toggleSidebar() {
         sidebar.classList.toggle('collapsed');
         localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
-    });
+    }
 
-    toggleMobile.addEventListener('click', function() {
-        sidebar.classList.toggle('open');
-    });
+    if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+    if (brandIcon) {
+        brandIcon.addEventListener('click', function() {
+            if (sidebar.classList.contains('collapsed')) {
+                toggleSidebar();
+            }
+        });
+    }
+
+    if (toggleMobile) {
+        toggleMobile.addEventListener('click', function() {
+            sidebar.classList.toggle('open');
+        });
+    }
 
     if (localStorage.getItem('sidebarCollapsed') === 'true') {
         sidebar.classList.add('collapsed');

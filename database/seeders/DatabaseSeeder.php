@@ -33,12 +33,14 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Sample Catering untuk Bunda Fadil
-        DB::table('catering')->insert([
+        $cateringId = DB::table('catering')->insertGetId([
             'id_admin'      => $adminFadil->id,
             'nama_catering' => 'Catering Bunda Fadil',
             'deskripsi'     => 'Menyediakan aneka paket catering sehat, lezat, dan bergizi untuk program MBG.',
             'status'        => 'Aktif',
         ]);
+
+        $adminFadil->update(['id_catering' => $cateringId]);
 
         // 3. Akun User (Pembeli)
         User::create([

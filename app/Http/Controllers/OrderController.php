@@ -94,7 +94,7 @@ class OrderController extends Controller
 
     public function userOrders()
     {
-        $orders = Pesanan::with(['catering', 'pembayaran'])
+        $orders = Pesanan::with(['catering', 'pembayaran', 'ulasan'])
             ->where('id_pelanggan', Auth::id())
             ->orderBy('id', 'desc')
             ->get();
@@ -104,7 +104,7 @@ class OrderController extends Controller
 
     public function userOrderDetail($id)
     {
-        $order = Pesanan::with(['catering', 'details.menu', 'details.paket', 'pembayaran'])
+        $order = Pesanan::with(['catering', 'details.menu', 'details.paket', 'pembayaran', 'ulasan'])
             ->where('id_pelanggan', Auth::id())
             ->findOrFail($id);
 

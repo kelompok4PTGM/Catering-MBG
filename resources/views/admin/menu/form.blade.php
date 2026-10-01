@@ -11,7 +11,7 @@
 </div>
 
 <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-    <form action="{{ isset($menu) ? route('menu.update', $menu->id) : route('menu.store') }}" method="POST">
+    <form action="{{ isset($menu) ? route('menu.update', $menu->id) : route('menu.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @if(isset($menu))
             @method('PUT')
@@ -58,6 +58,25 @@
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
+            </div>
+
+            <div>
+                <label for="foto" class="block text-sm font-medium text-gray-700">Foto Makanan / Minuman</label>
+                <div class="mt-2 flex items-center gap-4">
+                    @if(isset($menu) && $menu->foto)
+                        <div class="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                            <img src="{{ asset('storage/' . $menu->foto) }}" alt="{{ $menu->nama_menu }}" class="w-full h-full object-cover">
+                        </div>
+                    @endif
+                    <div class="flex-1">
+                        <input type="file" name="foto" id="foto" accept="image/*"
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 cursor-pointer">
+                        <p class="mt-1 text-xs text-gray-500">Format JPG, JPEG, PNG, WEBP. Maks 2MB.</p>
+                    </div>
+                </div>
+                @error('foto')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 

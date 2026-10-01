@@ -21,6 +21,7 @@ class Menu extends Model
         'nama_menu',
         'harga',
         'stok',
+        'foto',
     ];
 
     public function catering(): BelongsTo

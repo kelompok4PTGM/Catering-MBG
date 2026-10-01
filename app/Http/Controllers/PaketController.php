@@ -7,6 +7,7 @@ use App\Models\Paket;
 use App\Models\Menu;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PaketController extends Controller
 {
@@ -46,16 +47,22 @@ class PaketController extends Controller
 
         $request->validate([
             'nama_paket' => 'required|string|max:100',
+            'harga' => 'required|numeric|min:0',
             'menus' => 'required|array|min:1',
-            'menus.*' => 'exists:menu,id'
+            'menus.*' => 'exists:menu,id',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        $total_harga = Menu::whereIn('id', $request->menus)->sum('harga');
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('paket', 'public');
+        }
 
         $paket = Paket::create([
             'id_catering' => $catering->id,
             'nama_paket' => $request->nama_paket,
-            'harga' => $total_harga,
+            'harga' => $request->harga,
+            'foto' => $fotoPath,
         ]);
 
         $paket->menus()->sync($request->menus);
@@ -87,16 +94,25 @@ class PaketController extends Controller
 
         $request->validate([
             'nama_paket' => 'required|string|max:100',
+            'harga' => 'required|numeric|min:0',
             'menus' => 'required|array|min:1',
-            'menus.*' => 'exists:menu,id'
+            'menus.*' => 'exists:menu,id',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        $total_harga = Menu::whereIn('id', $request->menus)->sum('harga');
-
-        $paket->update([
+        $data = [
             'nama_paket' => $request->nama_paket,
-            'harga' => $total_harga,
-        ]);
+            'harga' => $request->harga,
+        ];
+
+        if ($request->hasFile('foto')) {
+            if ($paket->foto && Storage::disk('public')->exists($paket->foto)) {
+                Storage::disk('public')->delete($paket->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('paket', 'public');
+        }
+
+        $paket->update($data);
 
         $paket->menus()->sync($request->menus);
 
@@ -111,6 +127,11 @@ class PaketController extends Controller
         }
 
         $paket = Paket::where('id', $id)->where('id_catering', $catering->id)->firstOrFail();
+
+        if ($paket->foto && Storage::disk('public')->exists($paket->foto)) {
+            Storage::disk('public')->delete($paket->foto);
+        }
+
         $paket->delete();
 
         return redirect()->route('paket.index')->with('success', 'Paket berhasil dihapus.');

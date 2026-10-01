@@ -44,15 +44,40 @@ class AuthController extends Controller
             'username' => 'required|string|max:50|unique:pengguna',
             'email'    => 'required|string|email|max:100|unique:pengguna',
             'password' => 'required|string|min:6|confirmed',
-            'role'     => 'required|in:Superadmin,Admin,User',
         ]);
 
         $user = User::create([
             'username' => $request->username,
             'email'    => $request->email,
             'password' => $request->password,
-            'role'     => $request->role,
+            'role'     => 'User',
             'status'   => 'Aktif',
+        ]);
+
+        Auth::login($user);
+
+        return redirect()->route('dashboard');
+    }
+
+    public function showRegisterMitra()
+    {
+        return view('auth.register-mitra');
+    }
+
+    public function registerMitra(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string|max:50|unique:pengguna',
+            'email'    => 'required|string|email|max:100|unique:pengguna',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = User::create([
+            'username' => $request->username,
+            'email'    => $request->email,
+            'password' => $request->password,
+            'role'     => 'Admin',
+            'status'   => 'Pending', // pending approval
         ]);
 
         Auth::login($user);

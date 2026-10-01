@@ -12,15 +12,25 @@
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-secondary">
             <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Foto</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Paket</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Daftar Menu</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Harga Total</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Harga Paket</th>
                 <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
             @forelse($pakets as $paket)
             <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    @if($paket->foto)
+                        <img src="{{ asset('storage/' . $paket->foto) }}" alt="{{ $paket->nama_paket }}" class="w-12 h-12 rounded-lg object-cover border border-gray-200">
+                    @else
+                        <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
+                            <i class="fas fa-box"></i>
+                        </div>
+                    @endif
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $paket->nama_paket }}</td>
                 <td class="px-6 py-4 text-sm text-gray-600">
                     @if($paket->menus->count() > 0)
@@ -33,7 +43,7 @@
                         <span class="italic text-gray-400">Tidak ada menu</span>
                     @endif
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Rp {{ number_format($paket->harga, 0, ',', '.') }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-semibold">Rp {{ number_format($paket->harga, 0, ',', '.') }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <a href="{{ route('paket.edit', $paket->id) }}" class="text-accent hover:text-[#5a781d] mr-3 font-bold">Edit</a>
                     <form action="{{ route('paket.destroy', $paket->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus paket ini?');">
@@ -45,7 +55,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="4" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada paket.</td>
+                <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada paket.</td>
             </tr>
             @endforelse
         </tbody>

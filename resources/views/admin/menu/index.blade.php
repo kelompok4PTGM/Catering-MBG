@@ -12,6 +12,7 @@
     <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-secondary">
             <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Foto</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Kode</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Menu</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Harga</th>
@@ -22,8 +23,17 @@
         <tbody class="bg-white divide-y divide-gray-200">
             @forelse($menus as $menu)
             <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    @if($menu->foto)
+                        <img src="{{ asset('storage/' . $menu->foto) }}" alt="{{ $menu->nama_menu }}" class="w-12 h-12 rounded-lg object-cover border border-gray-200">
+                    @else
+                        <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                    @endif
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $menu->kode_menu }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $menu->nama_menu }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-semibold">{{ $menu->nama_menu }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">Rp {{ number_format($menu->harga, 0, ',', '.') }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $menu->stok }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -37,7 +47,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada menu.</td>
+                <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Belum ada menu.</td>
             </tr>
             @endforelse
         </tbody>

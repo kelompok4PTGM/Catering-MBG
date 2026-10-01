@@ -19,6 +19,7 @@ class Paket extends Model
         'id_catering',
         'nama_paket',
         'harga',
+        'foto',
     ];
 
     public function catering(): BelongsTo

@@ -11,7 +11,7 @@ class CateringStoreController extends Controller
 {
     public function show($id)
     {
-        $catering = Catering::with(['menus', 'pakets'])->findOrFail($id);
+        $catering = Catering::with(['menus', 'pakets', 'ulasans.pelanggan'])->findOrFail($id);
 
         return view('catering.show', compact('catering'));
     }

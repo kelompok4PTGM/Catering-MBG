@@ -67,37 +67,60 @@
         @if(isset($caterings) && count($caterings) > 0)
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 @foreach($caterings as $catering)
-                <div class="card-catering bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-                    <div class="h-44 overflow-hidden relative">
-                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80"
-                             alt="{{ $catering->nama_catering }}" class="w-full h-full object-cover">
-                        @if($loop->first)
-                            <span class="absolute top-3 left-3 bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded">TERLARIS</span>
-                        @elseif($loop->iteration == 5)
-                            <span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded">VEGAN FRIENDLY</span>
-                        @endif
-                    </div>
-                    <div class="p-4">
-                        <div class="flex items-start justify-between mb-1">
-                            <h3 class="font-bold text-gray-900">{{ $catering->nama_catering }}</h3>
-                            <span class="bg-gray-800 text-white px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap">★ 4.8</span>
+                <div class="card-interactive reveal-on-scroll delay-{{ (($loop->iteration - 1) % 3) * 100 + 100 }} bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col justify-between group">
+                    <div>
+                        <div class="h-44 overflow-hidden relative bg-gray-100">
+                            <img src="{{ $catering->foto ? asset('storage/' . $catering->foto) : 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80' }}"
+                                 alt="{{ $catering->nama_catering }}" class="img-zoom w-full h-full object-cover">
+                            @if($loop->first)
+                                <span class="absolute top-3 left-3 bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded shadow-xs">TERLARIS</span>
+                            @elseif($loop->iteration == 5)
+                                <span class="absolute top-3 left-3 bg-green-500 text-white text-xs font-bold px-2.5 py-1 rounded shadow-xs">VEGAN FRIENDLY</span>
+                            @endif
                         </div>
-                        <p class="text-xs text-gray-500 mb-2">
-                            <i class="fas fa-map-marker-alt mr-1"></i>{{ $catering->lokasi ?? 'Jakarta' }}
-                        </p>
-                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">
-                            {{ $catering->deskripsi ?? 'Catering terpercaya dengan menu lezat dan bergizi.' }}
-                        </p>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-xs text-gray-500">Mulai dari</p>
-                                <p class="font-bold text-gray-900">Rp 25.000 <span class="text-xs font-normal text-gray-500">/pax</span></p>
+                        <div class="p-4">
+                            <div class="flex items-start justify-between mb-1">
+                                <h3 class="font-bold text-gray-900 group-hover:text-orange-500 transition-colors">{{ $catering->nama_catering }}</h3>
+                                @if($catering->total_ulasan > 0)
+                                    <span class="bg-amber-500 text-white px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap shadow-xs flex items-center gap-1" title="{{ $catering->total_ulasan }} ulasan">
+                                        <i class="fas fa-star text-[10px]"></i> {{ $catering->average_rating }}
+                                    </span>
+                                @else
+                                    <span class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap">
+                                        Baru
+                                    </span>
+                                @endif
                             </div>
-                            <a href="{{ route('catering.show', $catering->id) }}"
-                               class="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
-                                Lihat
-                            </a>
+                            <p class="text-xs text-gray-500 mb-2">
+                                <i class="fas fa-map-marker-alt mr-1"></i>{{ $catering->lokasi ?? 'Jakarta' }}
+                            </p>
+                            <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                {{ $catering->deskripsi ?? 'Catering terpercaya dengan menu lezat dan bergizi.' }}
+                            </p>
                         </div>
+                    </div>
+                    @php
+                        $minMenu = $catering->menus ? $catering->menus->min('harga') : null;
+                        $minPaket = $catering->pakets ? $catering->pakets->min('harga') : null;
+                        $prices = array_filter([$minMenu, $minPaket]);
+                        $minHarga = !empty($prices) ? min($prices) : 0;
+                    @endphp
+                    <div class="p-4 pt-0 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs text-gray-500">Mulai dari</p>
+                            <p class="font-bold text-gray-900">
+                                @if($minHarga > 0)
+                                    Rp {{ number_format($minHarga, 0, ',', '.') }}
+                                @else
+                                    -
+                                @endif
+                                <span class="text-xs font-normal text-gray-500">/pax</span>
+                            </p>
+                        </div>
+                        <a href="{{ route('catering.show', $catering->id) }}"
+                           class="btn-press bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-xs">
+                            Lihat
+                        </a>
                     </div>
                 </div>
                 @endforeach

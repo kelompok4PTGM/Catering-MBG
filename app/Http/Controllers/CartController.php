@@ -67,6 +67,7 @@ class CartController extends Controller
                 'harga' => $harga,
                 'jumlah' => $jumlah,
                 'id_catering' => $cateringId,
+                'foto' => $item->foto,
             ];
         }
 

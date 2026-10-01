@@ -16,6 +16,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/register-mitra', [AuthController::class, 'showRegisterMitra'])->name('register.mitra');
+    Route::post('/register-mitra', [AuthController::class, 'registerMitra']);
 });
 
 Route::middleware('auth')->group(function () {
@@ -30,6 +32,7 @@ Route::middleware('auth')->group(function () {
         
         // ===== FITUR SUPERADMIN (BARU) =====
         Route::get('/superadmin/pengguna', [SuperadminController::class, 'pengguna'])->name('superadmin.pengguna');
+        Route::post('/superadmin/pengguna/approve/{id}', [SuperadminController::class, 'approveAdmin'])->name('superadmin.approve.admin');
         Route::get('/superadmin/catering', [SuperadminController::class, 'catering'])->name('superadmin.catering');
         Route::get('/superadmin/pesanan', [SuperadminController::class, 'pesanan'])->name('superadmin.pesanan');
     });
@@ -38,23 +41,25 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:Admin')->group(function() {
         Route::get('/admin/dashboard', [HomeController::class, 'adminDashboard'])->name('admin.dashboard');
         
-        // Catering Profile
-        Route::get('/admin/catering/profile', [CateringController::class, 'profile'])->name('admin.catering.profile');
-        Route::post('/admin/catering/profile', [CateringController::class, 'updateProfile'])->name('admin.catering.update');
-        
-        // Menu & Paket Routes
-        Route::resource('admin/menu', MenuController::class);
-        Route::resource('admin/paket', PaketController::class);
+        Route::middleware('admin.approved')->group(function () {
+            // Catering Profile
+            Route::get('/admin/catering/profile', [CateringController::class, 'profile'])->name('admin.catering.profile');
+            Route::post('/admin/catering/profile', [CateringController::class, 'updateProfile'])->name('admin.catering.update');
+            
+            // Menu & Paket Routes
+            Route::resource('admin/menu', MenuController::class)->names('menu');
+            Route::resource('admin/paket', PaketController::class)->names('paket');
 
-        // Admin Orders
-        Route::get('/admin/orders', [\App\Http\Controllers\AdminOrderController::class, 'index'])->name('admin.orders.index');
-        Route::get('/admin/orders/{id}', [\App\Http\Controllers\AdminOrderController::class, 'show'])->name('admin.orders.show');
-        Route::post('/admin/orders/{id}/status', [\App\Http\Controllers\AdminOrderController::class, 'updateStatus'])->name('admin.orders.status');
-        
-        // ===== LAPORAN PENJUALAN (BARU) =====
-        Route::get('/admin/laporan', [AnalisisController::class, 'laporanAdmin'])->name('admin.laporan');
-        Route::get('/admin/laporan/print', [AnalisisController::class, 'printLaporan'])->name('admin.laporan.print');
-        Route::get('/admin/laporan/csv', [AnalisisController::class, 'exportCsv'])->name('admin.laporan.csv');
+            // Admin Orders
+            Route::get('/admin/orders', [\App\Http\Controllers\AdminOrderController::class, 'index'])->name('admin.orders.index');
+            Route::get('/admin/orders/{id}', [\App\Http\Controllers\AdminOrderController::class, 'show'])->name('admin.orders.show');
+            Route::post('/admin/orders/{id}/status', [\App\Http\Controllers\AdminOrderController::class, 'updateStatus'])->name('admin.orders.status');
+            
+            // ===== LAPORAN PENJUALAN (BARU) =====
+            Route::get('/admin/laporan', [AnalisisController::class, 'laporanAdmin'])->name('admin.laporan');
+            Route::get('/admin/laporan/print', [AnalisisController::class, 'printLaporan'])->name('admin.laporan.print');
+            Route::get('/admin/laporan/csv', [AnalisisController::class, 'exportCsv'])->name('admin.laporan.csv');
+        });
     });
 
     // ============ USER ============
@@ -67,6 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/user/orders', [\App\Http\Controllers\OrderController::class, 'userOrders'])->name('user.orders');
         Route::get('/user/orders/{id}', [\App\Http\Controllers\OrderController::class, 'userOrderDetail'])->name('user.orders.show');
         Route::post('/user/orders/{id}/pay', [\App\Http\Controllers\OrderController::class, 'pay'])->name('user.orders.pay');
+        Route::post('/user/orders/{id}/ulasan', [\App\Http\Controllers\UlasanController::class, 'store'])->name('user.orders.ulasan');
     });
 
     // ============ PUBLIC / SHARED ============

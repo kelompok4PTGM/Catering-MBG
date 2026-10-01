@@ -47,48 +47,76 @@
         .sidebar.collapsed {
             width: 72px;
         }
+        .sidebar.collapsed .sidebar-brand { justify-content: center; padding: 14px 8px; }
         .sidebar.collapsed .sidebar-brand h2 { display: none; }
         .sidebar.collapsed .sidebar-brand span { display: none; }
+        .sidebar.collapsed .sidebar-brand .sidebar-toggle-btn { display: none; }
+        .sidebar.collapsed .sidebar-brand .brand-icon { margin: 0; cursor: pointer; }
         .sidebar.collapsed .menu-label { display: none; }
         .sidebar.collapsed .sidebar-menu a span { display: none; }
         .sidebar.collapsed .sidebar-menu a .badge { display: none; }
         .sidebar.collapsed .sidebar-menu a { justify-content: center; padding: 10px; }
         .sidebar.collapsed .sidebar-menu a i { font-size: 20px; margin: 0; }
-        .sidebar.collapsed .sidebar-brand { justify-content: center; padding: 16px; }
-        .sidebar.collapsed .sidebar-brand .brand-icon { margin: 0; }
         
         .sidebar::-webkit-scrollbar { width: 4px; }
         .sidebar::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
         
         .sidebar-brand {
-            padding: 16px 20px;
+            padding: 14px 16px;
             border-bottom: 1px solid #1e293b;
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
             transition: all 0.3s ease;
         }
+        .sidebar-brand .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .sidebar-brand .brand-icon {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             background: #F59E0B;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             color: #0f172a;
             font-weight: 700;
             flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .sidebar.collapsed .sidebar-brand .brand-icon:hover {
+            transform: scale(1.08);
         }
         .sidebar-brand h2 {
             color: #f8fafc;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             white-space: nowrap;
             transition: opacity 0.2s ease;
         }
         .sidebar-brand h2 span { color: #F59E0B; }
+        .sidebar-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sidebar-toggle-btn:hover {
+            background: #1e293b;
+            color: #f8fafc;
+        }
         
         .sidebar-menu { padding: 12px 12px; }
         .sidebar-menu .menu-label {
@@ -228,36 +256,52 @@
 <!-- ============ SIDEBAR ============ -->
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <div class="brand-icon">MBG</div>
-        <h2>Catering <span>MBG</span></h2>
+        <div class="brand-info">
+            <div class="brand-icon" id="brandIcon" title="Toggle Sidebar">MBG</div>
+            <h2>Catering <span>MBG</span></h2>
+        </div>
+        <button class="sidebar-toggle-btn" id="sidebarToggle" title="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
     </div>
     <nav class="sidebar-menu">
         <div class="menu-label">Main Menu</div>
         <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             <i class="fas fa-chart-pie"></i> <span>Dashboard</span>
         </a>
-        <a href="{{ route('admin.catering.profile') }}" class="{{ request()->routeIs('admin.catering.*') ? 'active' : '' }}">
-            <i class="fas fa-store"></i> <span>Profil Catering</span>
-        </a>
         
-        <div class="menu-label">Manajemen</div>
-        <a href="{{ route('menu.index') }}" class="{{ request()->routeIs('menu.*') ? 'active' : '' }}">
-            <i class="fas fa-utensils"></i> <span>Kelola Menu</span>
-        </a>
-        <a href="{{ route('paket.index') }}" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}">
-            <i class="fas fa-box"></i> <span>Kelola Paket</span>
-        </a>
-        
-        <div class="menu-label">Transaksi</div>
-        <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-            <i class="fas fa-clipboard-list"></i> <span>Pesanan Masuk</span>
-            <span class="badge">{{ \App\Models\Pesanan::where('id_catering', auth()->user()->id_catering ?? 0)->where('status_pesanan', 'Pending')->count() }}</span>
-        </a>
-        
-        <div class="menu-label">Laporan</div>
-        <a href="{{ route('admin.laporan') }}" class="{{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
-            <i class="fas fa-file-alt"></i> <span>Laporan Penjualan</span>
-        </a>
+        @if(Auth::user()->status === 'Aktif')
+            <a href="{{ route('admin.catering.profile') }}" class="{{ request()->routeIs('admin.catering.*') ? 'active' : '' }}">
+                <i class="fas fa-store"></i> <span>Profil Catering</span>
+            </a>
+            
+            <div class="menu-label">Manajemen</div>
+            <a href="{{ route('menu.index') }}" class="{{ request()->routeIs('menu.*') ? 'active' : '' }}">
+                <i class="fas fa-utensils"></i> <span>Kelola Menu</span>
+            </a>
+            <a href="{{ route('paket.index') }}" class="{{ request()->routeIs('paket.*') ? 'active' : '' }}">
+                <i class="fas fa-box"></i> <span>Kelola Paket</span>
+            </a>
+            
+            <div class="menu-label">Transaksi</div>
+            @php
+                $adminCateringId = auth()->user()->catering?->id ?? auth()->user()->id_catering ?? 0;
+                $pesananMasukCount = \App\Models\Pesanan::where('id_catering', $adminCateringId)
+                    ->whereIn('status_pesanan', ['Pending', 'Diproses'])
+                    ->count();
+            @endphp
+            <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                <i class="fas fa-clipboard-list"></i> <span>Pesanan Masuk</span>
+                @if($pesananMasukCount > 0)
+                    <span class="badge">{{ $pesananMasukCount }}</span>
+                @endif
+            </a>
+            
+            <div class="menu-label">Laporan</div>
+            <a href="{{ route('admin.laporan') }}" class="{{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
+                <i class="fas fa-file-alt"></i> <span>Laporan Penjualan</span>
+            </a>
+        @endif
         
         <div class="menu-label">Akun</div>
         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -272,19 +316,24 @@
     <!-- Topbar -->
     <header class="topbar">
         <div class="left-section">
-            <!-- TOMBOL 3 GARIS (COLLAPSE) -->
-            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
-                <i class="fas fa-bars"></i>
-            </button>
             <!-- TOMBOL 3 GARIS UNTUK MOBILE -->
-            <button class="sidebar-toggle sidebar-toggle-mobile" id="sidebarToggleMobile" title="Open Sidebar">
+            <button class="sidebar-toggle-mobile" id="sidebarToggleMobile" title="Open Sidebar">
                 <i class="fas fa-bars"></i>
             </button>
             <h1>{{ $pageTitle ?? 'Dashboard' }}</h1>
         </div>
         <div class="user-info">
-            <span>{{ Auth::user()->username ?? 'Admin' }}</span>
-            <div class="avatar">{{ substr(Auth::user()->username ?? 'A', 0, 1) }}</div>
+            <div class="text-right hidden sm:block">
+                <span class="block font-semibold text-sm text-gray-800">{{ Auth::user()->username ?? 'Admin' }}</span>
+                @if(Auth::user()?->catering)
+                    <span class="block text-xs text-orange-600 font-medium">{{ Auth::user()->catering->nama_catering }}</span>
+                @endif
+            </div>
+            @if(Auth::user()?->catering?->foto)
+                <img src="{{ asset('storage/' . Auth::user()->catering->foto) }}" alt="Avatar" class="avatar object-cover border border-amber-300 shadow-sm">
+            @else
+                <div class="avatar">{{ substr(Auth::user()->username ?? 'A', 0, 1) }}</div>
+            @endif
         </div>
     </header>
 
@@ -308,21 +357,31 @@
     // ===== SIDEBAR COLLAPSE =====
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('sidebarToggle');
+    const brandIcon = document.getElementById('brandIcon');
     const toggleMobile = document.getElementById('sidebarToggleMobile');
     const mainContent = document.getElementById('mainContent');
 
-    // Toggle collapse (desktop)
-    toggleBtn.addEventListener('click', function() {
+    function toggleSidebar() {
         sidebar.classList.toggle('collapsed');
-        // Simpan state di localStorage
         const isCollapsed = sidebar.classList.contains('collapsed');
         localStorage.setItem('sidebarCollapsed', isCollapsed);
-    });
+    }
+
+    if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+    if (brandIcon) {
+        brandIcon.addEventListener('click', function() {
+            if (sidebar.classList.contains('collapsed')) {
+                toggleSidebar();
+            }
+        });
+    }
 
     // Toggle mobile
-    toggleMobile.addEventListener('click', function() {
-        sidebar.classList.toggle('open');
-    });
+    if (toggleMobile) {
+        toggleMobile.addEventListener('click', function() {
+            sidebar.classList.toggle('open');
+        });
+    }
 
     // Load saved state
     if (localStorage.getItem('sidebarCollapsed') === 'true') {

@@ -76,6 +76,92 @@
                     <span class="text-2xl font-black text-primary">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
                 </div>
             </div>
+
+            <!-- Penilaian & Ulasan Catering (Hanya Jika Selesai) -->
+            @if($order->status_pesanan === 'Selesai')
+                <div class="bg-white rounded-2xl shadow-sm border border-orange-100 p-6">
+                    <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-100">
+                        <div>
+                            <h3 class="text-base font-extrabold text-textcolor flex items-center gap-2">
+                                <i class="fas fa-star text-amber-400"></i> Penilaian & Ulasan Catering
+                            </h3>
+                            <p class="text-xs text-gray-500">Bagikan pengalaman Anda memesan di {{ $order->catering->nama_catering ?? 'Catering' }}</p>
+                        </div>
+                        @if($order->ulasan)
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i> Sudah Dinilai
+                            </span>
+                        @endif
+                    </div>
+
+                    @if($order->ulasan)
+                        <!-- Tampilan Ulasan Yang Sudah Dikirim -->
+                        <div class="bg-amber-50/70 rounded-xl p-5 border border-amber-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-1.5">
+                                    <div class="flex items-center gap-0.5 text-amber-400">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= $order->ulasan->rating)
+                                                <svg class="w-5 h-5 fill-current text-amber-400" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                            @else
+                                                <svg class="w-5 h-5 fill-current text-gray-300" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                    <span class="ml-2 font-bold text-gray-800 text-sm">({{ $order->ulasan->rating }} / 5 Bintang)</span>
+                                </div>
+                                <span class="text-xs text-gray-500">{{ $order->ulasan->created_at->format('d M Y, H:i') }}</span>
+                            </div>
+                            <p class="text-sm text-gray-700 italic">
+                                "{{ $order->ulasan->komentar ?: 'Tidak ada komentar tertulis.' }}"
+                            </p>
+                        </div>
+                    @else
+                        <!-- Form Kirim Ulasan -->
+                        <form action="{{ route('user.orders.ulasan', $order->id) }}" method="POST" class="space-y-4" id="formUlasan">
+                            @csrf
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    Beri Bintang (Klik 1 - 5 Bintang)
+                                </label>
+                                <div class="flex flex-wrap items-center gap-1 sm:gap-2 p-2 bg-gray-50 rounded-xl border border-gray-200" id="starContainer">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <button type="button" 
+                                            class="star-btn p-1 text-gray-300 hover:scale-125 transition-all transform duration-150 focus:outline-none cursor-pointer" 
+                                            data-value="{{ $i }}" 
+                                            title="Beri {{ $i }} Bintang">
+                                            <svg class="w-8 h-8 sm:w-9 sm:h-9 fill-current" viewBox="0 0 24 24">
+                                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                            </svg>
+                                        </button>
+                                    @endfor
+                                    <span id="starLabel" class="ml-2 text-sm font-semibold text-gray-500">Pilih rating bintang Anda</span>
+                                </div>
+                                <input type="hidden" name="rating" id="ratingInput" value="" required>
+                                @error('rating')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="komentar" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+                                    Ulasan / Komentar (Opsional)
+                                </label>
+                                <textarea name="komentar" id="komentar" rows="3" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-primary focus:border-primary placeholder-gray-400"
+                                    placeholder="Bagaimana rasa makanan, ketepatan waktu, dan pelayanan catering ini?"></textarea>
+                                @error('komentar')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <button type="submit" id="btnSubmitUlasan" class="bg-primary hover:bg-amber-600 text-white font-bold py-2.5 px-6 rounded-xl shadow-md transition text-sm flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fas fa-paper-plane"></i> Kirim Penilaian
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            @endif
         </div>
 
         <!-- Sidebar: Payment Section -->
@@ -125,4 +211,89 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const starBtns = document.querySelectorAll('.star-btn');
+        const ratingInput = document.getElementById('ratingInput');
+        const starLabel = document.getElementById('starLabel');
+        const formUlasan = document.getElementById('formUlasan');
+        const starContainer = document.getElementById('starContainer');
+
+        const labels = {
+            1: '1 Bintang ★ (Sangat Kecewa)',
+            2: '2 Bintang ★★ (Kurang Memuaskan)',
+            3: '3 Bintang ★★★ (Cukup Baik)',
+            4: '4 Bintang ★★★★ (Sangat Baik)',
+            5: '5 Bintang ★★★★★ (Luar Biasa!)'
+        };
+
+        let selectedRating = parseInt(ratingInput ? ratingInput.value : 0) || 0;
+
+        function renderStars(val) {
+            starBtns.forEach((btn, idx) => {
+                const starVal = idx + 1;
+                if (starVal <= val) {
+                    btn.classList.remove('text-gray-300');
+                    btn.classList.add('text-amber-400');
+                } else {
+                    btn.classList.remove('text-amber-400');
+                    btn.classList.add('text-gray-300');
+                }
+            });
+
+            if (starLabel) {
+                if (val > 0) {
+                    starLabel.textContent = labels[val] || (val + ' Bintang');
+                    starLabel.className = 'ml-2 text-sm font-bold text-amber-600';
+                } else {
+                    starLabel.textContent = 'Klik bintang untuk memilih (1 - 5)';
+                    starLabel.className = 'ml-2 text-sm font-semibold text-gray-500';
+                }
+            }
+        }
+
+        if (starBtns.length > 0) {
+            starBtns.forEach(btn => {
+                const val = parseInt(btn.getAttribute('data-value'));
+
+                // Efek hover preview
+                btn.addEventListener('mouseenter', function () {
+                    renderStars(val);
+                });
+
+                // Klik untuk mengunci nilai rating
+                btn.addEventListener('click', function () {
+                    selectedRating = val;
+                    if (ratingInput) ratingInput.value = val;
+                    renderStars(selectedRating);
+                });
+            });
+
+            // Saat mouse keluar dari wadah bintang, kembalikan ke nilai yang sudah diklik
+            if (starContainer) {
+                starContainer.addEventListener('mouseleave', function () {
+                    renderStars(selectedRating);
+                });
+            }
+
+            // Validasi sebelum submit
+            if (formUlasan) {
+                formUlasan.addEventListener('submit', function (e) {
+                    if (!selectedRating || selectedRating < 1 || selectedRating > 5) {
+                        e.preventDefault();
+                        alert('Silakan pilih penilaian bintang terlebih dahulu (1 sampai 5 bintang).');
+                        if (starContainer) {
+                            starContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            starContainer.classList.add('ring-2', 'ring-amber-500');
+                            setTimeout(() => starContainer.classList.remove('ring-2', 'ring-amber-500'), 2000);
+                        }
+                    }
+                });
+            }
+
+            renderStars(selectedRating);
+        }
+    });
+</script>
 @endsection

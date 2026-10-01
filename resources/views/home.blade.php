@@ -83,7 +83,7 @@
                         <h3 class="font-bold text-gray-900 truncate">{{ $catering->nama_catering }}</h3>
                         <span class="bg-gray-800 text-white px-2.5 py-1 rounded-md text-xs font-semibold whitespace-nowrap">★ 4.9</span>
                     </div>
-                    <p class="text-xs text-gray-500 mb-1">{{ $catering->created_at->format('d F') }}</p>
+                    <p class="text-xs text-gray-500 mb-1">{{ !empty($catering->created_at) ? \Carbon\Carbon::parse($catering->created_at)->format('d F') : 'Terbaru' }}</p>
                     <p class="text-sm text-gray-600 mb-4 line-clamp-2">
                         {{ $catering->deskripsi ?? 'Catering terpercaya dengan menu lezat dan bergizi.' }}
                     </p>
